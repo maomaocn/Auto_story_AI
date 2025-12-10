@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask To-Do 列表</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .task-list { list-style: none; padding: 0; }
+        .task-item { 
+            background: #f4f4f4; 
+            margin-bottom: 8px; 
+            padding: 10px; 
+            border-radius: 4px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+        .done { 
+            text-decoration: line-through; 
+            color: gray; 
+            background: #e0e0e0;
+        }
+        form { margin-top: 20px; }
+        .add-btn { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        a.toggle-btn { 
+            text-decoration: none; 
+            color: #007bff; 
+            font-weight: bold;
+        }
+        .task-content { flex-grow: 1; }
+    </style>
+</head>
+<body>
+    <h1>我的待办事项</h1>
+
+    <form method="POST" action="{{ url_for('todo.add_task') }}">
+        <input type="text" name="content" placeholder="添加新任务..." required>
+        <button type="submit" class="add-btn">添加</button>
+    </form>
+
+    <ul class="task-list">
+        {% for task in tasks %}
+            <li class="task-item {% if task.done %}done{% endif %}">
+                <span class="task-content">
+                    {{ task.content }} 
+                </span>
+                
+                <a href="{{ url_for('todo.toggle_task', task_id=task.id) }}" class="toggle-btn">
+                    {% if task.done %}
+                        撤销
+                    {% else %}
+                        完成
+                    {% endif %}
+                </a>
+            </li>
+        {% else %}
+            <li class="task-item">恭喜！所有任务已完成。</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
