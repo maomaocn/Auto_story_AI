@@ -1,7 +1,7 @@
 from typing import Optional, List
 from .base import TimestampSchema,BaseSchema
 from .episode import EpisodeRead
-import datetime
+from datetime import datetime
 # 项目基础Schema
 class ProjectBase(TimestampSchema):
     name: str

@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import declarative_base
 from .config import settings
 from typing import AsyncGenerator
+from sqlalchemy import text
 
 # 创建异步数据库引擎
 engine = create_async_engine(
@@ -47,9 +48,12 @@ async def init_db() -> None:
     在应用启动时调用
     """
     async with engine.begin() as conn:
-        # 创建所有表
+        result = await conn.execute(text("SELECT DATABASE()"))
+        db_name = result.scalar()
+        print("当前连接数据库：", db_name)
+        
         await conn.run_sync(Base.metadata.create_all)
-    print("Database initialized successfully")
+    print("数据库表已成功创建")
 
 async def close_db() -> None:
     """
@@ -57,4 +61,4 @@ async def close_db() -> None:
     在应用关闭时调用
     """
     await engine.dispose()
-    print("Database connection closed")
+    print("关闭数据库连接")
