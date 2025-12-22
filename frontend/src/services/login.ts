@@ -1,13 +1,13 @@
 import request from '@/http';
 
 interface HttpPostLoginReq {
-  userAccount: string;
-  userPassword: string;
+  username: string;
+  password: string;
 }
 
 interface HttpPostLoginRes {
-  userAccount: string;
-  userId: number; 
+  username: string;
+  userId: number;
   permissions: string[];
   accessToken: string;
   refreshToken: string;
@@ -18,7 +18,7 @@ interface HttpPostLoginRes {
  * 登录
  */
 export async function httpPostLogin(data: HttpPostLoginReq) {
-  return request.post<API.HttpResult<HttpPostLoginRes>>('/user/login', data);
+  return request.post<API.HttpResult<HttpPostLoginRes>>('/user/login/', data);
 }
 
 /**

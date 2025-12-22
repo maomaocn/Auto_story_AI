@@ -18,13 +18,12 @@ class LoginView(APIView):
     用户登录视图
     POST /api/v1/users/login/
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]#此接口不需要token
     serializer_class = LoginSerializer
-
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        print( serializer.validated_data)
         user = serializer.validated_data['user']
 
         # 生成JWT token

@@ -28,10 +28,10 @@ function handle401() {
 
 const statusMap: StatusHandlers = {
   '401': handle401,
-  '403': () => {},
-  '404': () => {},
-  '409': () => {},
-  '5xx': () => {},
+  '403': () => { },
+  '404': () => { },
+  '409': () => { },
+  '5xx': () => { },
 };
 
 const codeMap: CodeHandlers = {
@@ -48,6 +48,9 @@ const request: AxiosInstance = axios.create({
 
 request.interceptors.request.use(
   (config) => {
+    if (config.url?.includes('/user/login/')) {
+      return config; // 登录接口不加 Authorization
+    }
     const { accessToken = '' } = lsGetToken() || {};
     if (config.headers && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -55,7 +58,7 @@ request.interceptors.request.use(
     return config;
   },
   error => {
-    console.log(error);
+    console.log(error,);
     return Promise.reject(error);
   },
 );

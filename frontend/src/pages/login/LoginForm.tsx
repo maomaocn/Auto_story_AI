@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import SvgIcon from '@/components/SvgIcon';
 
 interface FormValues {
-  userAccount: string;
-  userPassword: string;
+  username: string;
+  password: string;
 }
 
 const LoginForm = () => {
@@ -16,10 +16,10 @@ const LoginForm = () => {
   const { t: t_login } = useTranslation('login');
 
   const onFinish = () => {
-    form.validateFields().then(({ userAccount, userPassword }: FormValues) => {
+    form.validateFields().then(({ username, password }: FormValues) => {
       httpPostLogin({
-        userAccount,
-        userPassword,
+        username,
+        password,
       }).then(({ data: { data } }) => {
         lsSetToken(data.accessToken, data.refreshToken, data.expiration);
         message.success(t_login('登录成功'));
@@ -37,19 +37,19 @@ const LoginForm = () => {
       </div>
       <Form
         form={form}
-        initialValues={{ userAccount: 'admin', userPassword: 'admin', remember: true }}
+        initialValues={{ username: 'admin', password: 'admin', remember: true }}
         onFinish={onFinish}
       >
         <Form.Item
           className="console-login__login-form-item"
-          name="userAccount"
+          name="username"
           rules={[{ required: true, message: t_login('请输入帐号') }]}
         >
           <Input size="large" prefix={<SvgIcon name="user" />} placeholder="admin" />
         </Form.Item>
         <Form.Item
           className="console-login__login-form-item"
-          name="userPassword"
+          name="password"
           rules={[{ required: true, message: t_login('请输入密码') }]}
         >
           <Input size="large" prefix={<SvgIcon name="locked" />} type="password" placeholder="admin" />
