@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import ModelUsageLog,ModelProvider
+from rest_framework.decorators import action
 from django.db.models import Value, CharField, IntegerField
 from .serializers import (
     ModelProviderListSerializer,
@@ -20,20 +21,8 @@ class ModelProviderViewSet(viewsets.ModelViewSet):
     """
 
     def get_queryset(self):
-        """
-        根据请求参数过滤查询集
-        支持按模型提供商ID和项目ID过滤
-        """
-        qs=ModelProvider.objects.all().prefetch_related('usage_logs')
-        response_serializer=ModelProviderListSerializer(qs)
-        
-        return Response({
-            "code":"200",
-            'success': True,
-            'message': '获取成功',
-            'data': response_serializer.data
-        },status=status.HTTP_200_OK)
-    
+        """获取所有模型提供商"""
+        return ModelProvider.objects.all().prefetch_related('usage_logs')
     def get_serializer_class(self):
         """根据动作选择序列化器"""
         if(self.action=='list'):
@@ -58,6 +47,62 @@ class ModelProviderViewSet(viewsets.ModelViewSet):
             response_serializer.data,
             status=status.HTTP_201_CREATED
         )
+    def list(self, request, *args, **kwargs):
+    # 1. 调用你原来的 get_queryset 获取数据
+        queryset = self.get_queryset()
+    # 2. 序列化数据
+        serializer = self.get_serializer(queryset, many=True)
+    # 3. 返回你自定义的结构
+        return Response({
+            "code": "200",
+            "success": True,
+            "message": "获取模型提供商成功",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+    
+
+    @action(detail=True, methods=['post'])
+    def test_connection(self, request, pk=None):
+        """
+        测试模型提供商连接
+        POST /api/v1/models/providers/{id}/test-connection/
+        Body: {"test_prompt": "Hello, this is a test."}
+        """
+        instance = self.get_object()
+        serializer = ModelProviderTestSerializer(
+            data=request.data,
+            context={'provider_id': str(instance.id)}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        test_prompt = serializer.validated_data.get(
+            'test_prompt',
+            'Hello, this is a test.'
+        )
+
+        # 异步测试转同步执行
+        result = async_to_sync(ModelProviderService.test_provider_connection)(
+            str(instance.id),
+            test_prompt
+        )
+
+        if result['success']:
+            return Response({
+                'success': True,
+                'message': '连接测试成功',
+                'latency_ms': result['latency_ms'],
+                'response': result.get('response'),
+                'data': result.get('data', {})
+            })
+        else:
+            return Response({
+                'success': False,
+                'message': '连接测试失败',
+                'error': result.get('error'),
+                'latency_ms': result.get('latency_ms', 0)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    
 
 class ModelUsageLogViewSet(viewsets.ModelViewSet):
     """

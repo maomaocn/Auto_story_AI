@@ -74,7 +74,7 @@ const ModelList: React.FC = () => {
      const res= await httpGetModels();
      if(res.status===200){
       setLoading(false);
-      setProviders(res.request || []);
+      setProviders(res.data.data || []);
      }else{
       message.error('加载模型列表失败');
       setLoading(false);
