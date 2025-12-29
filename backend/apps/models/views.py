@@ -1,3 +1,4 @@
+from asgiref.sync import async_to_sync
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import ModelUsageLog,ModelProvider

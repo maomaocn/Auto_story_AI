@@ -56,7 +56,7 @@ class ModelProviderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model=ModelProvider
         fields=[
-          'id', 'name', 'provider_type', 'provider_type_display','code','message',
+          'id', 'name', 'provider_type', 'provider_type_display',
             'api_url', 'api_key', 'model_name', 'executor_class',
             # LLM专用参数
             'max_tokens', 'temperature', 'top_p',
